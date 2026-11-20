@@ -1,0 +1,132 @@
+@startuml
+title Sơ đồ lớp – Xử lý thanh toán đơn hàng (Template Method)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class Main <<Client>> {
+  + main(args : String[]) : void
+}
+
+abstract class PaymentProcessor {
+  # {static} DEFAULT_MAX_AMOUNT : long
+  --
+  + processPayment(order : Order) : PaymentResult {final} <<template method>>
+  - validateOrder(order : Order) : void
+  - verifyOtp(order : Order) : void
+  - saveTransaction(order : Order, txId : String, total : long) : void
+  # {abstract} getMethodName() : String
+  # {abstract} calculateFee(order : Order) : long
+  # {abstract} authenticate(order : Order, total : long) : String
+  # {abstract} executeTransaction(order : Order, total : long) : String
+  # requiresOtp() : boolean <<hook>>
+  # getEnteredOtp() : String <<hook>>
+  # getMaxAmount() : long <<hook>>
+  # sendNotification(order : Order, txId : String) : String <<hook>>
+}
+
+class CreditCardPayment {
+  - cardNumber : String
+  - cardHolder : String
+  - expiry : String
+  - enteredOtp : String
+  # getMethodName() : String
+  # calculateFee(order) : long
+  # authenticate(order, total) : String
+  # executeTransaction(order, total) : String
+  # requiresOtp() : boolean
+  # getEnteredOtp() : String
+  ~ {static} passesLuhn(digits : String) : boolean
+}
+
+class EWalletPayment {
+  - walletPhone : String
+  - balance : long
+  - enteredOtp : String
+  # getMethodName() : String
+  # calculateFee(order) : long
+  # authenticate(order, total) : String
+  # executeTransaction(order, total) : String
+  # requiresOtp() : boolean
+  # getEnteredOtp() : String
+  # getMaxAmount() : long
+  + getBalance() : long
+}
+
+class BankTransferPayment {
+  - {static} SUPPORTED_BANKS : Set<String>
+  - bankCode : String
+  - accountNumber : String
+  # getMethodName() : String
+  # calculateFee(order) : long
+  # authenticate(order, total) : String
+  # executeTransaction(order, total) : String
+}
+
+class CodPayment {
+  # getMethodName() : String
+  # calculateFee(order) : long
+  # authenticate(order, total) : String
+  # executeTransaction(order, total) : String
+  # getMaxAmount() : long
+  # sendNotification(order, txId) : String
+}
+
+class Order {
+  - orderId : String
+  - customerName : String
+  - email : String
+  - phone : String
+  - shippingAddress : String
+  - amount : long
+}
+
+class PaymentResult {
+  - success : boolean
+  - method : String
+  - fee : long
+  - transactionId : String
+  - message : String
+  - steps : List<String>
+  + {static} success(...) : PaymentResult
+  + {static} failure(...) : PaymentResult
+  + getTotal() : long
+}
+
+class PaymentException
+class OtpService {
+  + {static} generate(orderId) : String
+  + {static} verify(orderId, code) : boolean
+}
+class TransactionStore {
+  + {static} save(record : String) : void
+  + {static} findAll() : List<String>
+}
+class Money {
+  + {static} format(vnd : long) : String
+}
+
+Exception <|-- PaymentException
+PaymentProcessor <|-- CreditCardPayment
+PaymentProcessor <|-- EWalletPayment
+PaymentProcessor <|-- BankTransferPayment
+PaymentProcessor <|-- CodPayment
+
+Main ..> PaymentProcessor : <<use>>
+PaymentProcessor ..> Order
+PaymentProcessor ..> PaymentResult : <<create>>
+PaymentProcessor ..> PaymentException
+PaymentProcessor ..> OtpService
+PaymentProcessor ..> TransactionStore
+PaymentProcessor ..> Money
+
+note right of PaymentProcessor
+  processPayment() là TEMPLATE METHOD (final):
+  1. validateOrder()        – chung
+  2. calculateFee()         – lớp con
+  3. authenticate()         – lớp con
+  4. if requiresOtp() verifyOtp()  – hook + chung
+  5. executeTransaction()   – lớp con
+  6. saveTransaction()      – chung
+  7. sendNotification()     – hook
+end note
+@enduml

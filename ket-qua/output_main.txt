@@ -1,0 +1,76 @@
+﻿=================================================================
+   HỆ THỐNG XỬ LÝ THANH TOÁN ĐƠN HÀNG - MẪU TEMPLATE METHOD
+=================================================================
+
+--- Trường hợp 1: Thẻ tín dụng hợp lệ, nhập đúng OTP ---
+Đơn DH001 | Nguyễn Văn An | 1.250.000 đ | Bộ xử lý: CreditCardPayment
+   [1] Kiểm tra đơn hàng ........ OK (1.250.000 đ)
+   [2] Tính phí giao dịch ....... 25.000 đ  => Tổng thanh toán: 1.275.000 đ
+   [3] Xác thực ................. OK - Thẻ **** 1111 của NGUYEN VAN AN
+   [4] Xác minh OTP ............. OK
+   [5] Thực hiện giao dịch ...... OK - Mã GD: CARD-DH001
+   [6] Lưu giao dịch ............ OK
+   [7] Gửi thông báo ............ Đã gửi hoá đơn điện tử tới email an@example.com
+   ==> KẾT QUẢ: THÀNH CÔNG | Mã GD CARD-DH001 | Đã thu 1.275.000 đ
+
+--- Trường hợp 2: Ví điện tử đủ số dư, nhập đúng OTP ---
+Đơn DH002 | Trần Thị Bình | 450.000 đ | Bộ xử lý: EWalletPayment
+   [1] Kiểm tra đơn hàng ........ OK (450.000 đ)
+   [2] Tính phí giao dịch ....... 4.500 đ  => Tổng thanh toán: 454.500 đ
+   [3] Xác thực ................. OK - Ví 0912345678, số dư 2.000.000 đ
+   [4] Xác minh OTP ............. OK
+   [5] Thực hiện giao dịch ...... OK - Mã GD: EWL-DH002
+   [6] Lưu giao dịch ............ OK
+   [7] Gửi thông báo ............ Đã gửi hoá đơn điện tử tới email binh@example.com
+   ==> KẾT QUẢ: THÀNH CÔNG | Mã GD EWL-DH002 | Đã thu 454.500 đ
+
+--- Trường hợp 3: Chuyển khoản ngân hàng ---
+Đơn DH003 | Lê Minh Châu | 12.000.000 đ | Bộ xử lý: BankTransferPayment
+   [1] Kiểm tra đơn hàng ........ OK (12.000.000 đ)
+   [2] Tính phí giao dịch ....... 3.300 đ  => Tổng thanh toán: 12.003.300 đ
+   [3] Xác thực ................. OK - TK VCB - 0071000123456
+   [4] Xác minh OTP ............. (bỏ qua - phương thức không yêu cầu)
+   [5] Thực hiện giao dịch ...... OK - Mã GD: BANK-DH003
+   [6] Lưu giao dịch ............ OK
+   [7] Gửi thông báo ............ Đã gửi hoá đơn điện tử tới email chau@example.com
+   ==> KẾT QUẢ: THÀNH CÔNG | Mã GD BANK-DH003 | Đã thu 12.003.300 đ
+
+--- Trường hợp 4: Thanh toán khi nhận hàng (COD) ---
+Đơn DH004 | Phạm Quốc Dũng | 3.200.000 đ | Bộ xử lý: CodPayment
+   [1] Kiểm tra đơn hàng ........ OK (3.200.000 đ)
+   [2] Tính phí giao dịch ....... 25.000 đ  => Tổng thanh toán: 3.225.000 đ
+   [3] Xác thực ................. OK - Giao tới: 21 Hùng Vương, TP. Đà Nẵng
+   [4] Xác minh OTP ............. (bỏ qua - phương thức không yêu cầu)
+   [5] Thực hiện giao dịch ...... OK - Mã GD: COD-DH004
+   [6] Lưu giao dịch ............ OK
+   [7] Gửi thông báo ............ Đã gửi SMS tới 0933111222: chuẩn bị tiền mặt khi nhận hàng
+   ==> KẾT QUẢ: THÀNH CÔNG | Mã GD COD-DH004 | Đã thu 3.225.000 đ
+
+--- Trường hợp 5: COD nhưng đơn vượt hạn mức 5 triệu ---
+Đơn DH005 | Võ Thị Em | 7.500.000 đ | Bộ xử lý: CodPayment
+   [1] THẤT BẠI: Vượt hạn mức Thanh toán khi nhận hàng (5.000.000 đ) -> dừng quy trình
+   ==> KẾT QUẢ: THẤT BẠI | Lý do: Vượt hạn mức Thanh toán khi nhận hàng (5.000.000 đ)
+
+--- Trường hợp 6: Thẻ tín dụng sai số thẻ ---
+Đơn DH005 | Võ Thị Em | 7.500.000 đ | Bộ xử lý: CreditCardPayment
+   [1] Kiểm tra đơn hàng ........ OK (7.500.000 đ)
+   [2] Tính phí giao dịch ....... 150.000 đ  => Tổng thanh toán: 7.650.000 đ
+   [3] THẤT BẠI: Số thẻ không hợp lệ -> dừng quy trình
+   ==> KẾT QUẢ: THẤT BẠI | Lý do: Số thẻ không hợp lệ
+
+--- Trường hợp 7: Ví điện tử nhập sai OTP ---
+Đơn DH002 | Trần Thị Bình | 450.000 đ | Bộ xử lý: EWalletPayment
+   [1] Kiểm tra đơn hàng ........ OK (450.000 đ)
+   [2] Tính phí giao dịch ....... 4.500 đ  => Tổng thanh toán: 454.500 đ
+   [3] Xác thực ................. OK - Ví 0912345678, số dư 2.000.000 đ
+   [4] THẤT BẠI: Mã OTP không đúng -> dừng quy trình
+   ==> KẾT QUẢ: THẤT BẠI | Lý do: Mã OTP không đúng
+
+=================== CÁC GIAO DỊCH ĐÃ LƯU ========================
+Mã GD      Đơn    Phương thức                    Tổng tiền
+-----------------------------------------------------------------
+CARD-DH001 DH001  Thẻ tín dụng                 1.275.000 đ
+EWL-DH002  DH002  Ví điện tử                     454.500 đ
+BANK-DH003 DH003  Chuyển khoản ngân hàng      12.003.300 đ
+COD-DH004  DH004  Thanh toán khi nhận hàng     3.225.000 đ
+=================================================================

@@ -1,0 +1,17 @@
+﻿================ KIỂM THỬ PaymentProcessor ================
+[ĐẠT] TC01 Thẻ hợp lệ + OTP đúng -> thành công, phí 2%
+[ĐẠT] TC02 Thẻ đơn nhỏ -> áp dụng phí tối thiểu 2.000
+[ĐẠT] TC03 Thẻ sai số (Luhn) -> thất bại ở bước xác thực
+[ĐẠT] TC04 Thẻ hết hạn -> thất bại
+[ĐẠT] TC05 Thẻ nhập sai OTP -> thất bại, không lưu giao dịch
+[ĐẠT] TC06 Ví đủ tiền -> thành công, phí 1%, trừ số dư
+[ĐẠT] TC07 Ví không đủ số dư -> thất bại
+[ĐẠT] TC08 Ví vượt hạn mức 20 triệu -> thất bại ở bước kiểm tra đơn
+[ĐẠT] TC09 Chuyển khoản -> thành công, phí cố định 3.300, không cần OTP
+[ĐẠT] TC10 Chuyển khoản ngân hàng không hỗ trợ -> thất bại
+[ĐẠT] TC11 COD -> thành công, phí 25.000, thông báo qua SMS (hook)
+[ĐẠT] TC12 COD vượt hạn mức 5 triệu (hook getMaxAmount) -> thất bại
+[ĐẠT] TC13 Đơn số tiền 0 -> mọi phương thức đều từ chối ở bước chung
+[ĐẠT] TC14 Template Method luôn gọi các bước ĐÚNG THỨ TỰ
+-----------------------------------------------------------
+KẾT QUẢ: 14 đạt, 0 lỗi / tổng 14 ca kiểm thử
